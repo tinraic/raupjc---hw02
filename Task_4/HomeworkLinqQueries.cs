@@ -10,8 +10,8 @@ namespace Task_4
     {
         public static string[] Linq1(int[] intArray)
         {
-            var result = intArray.GroupBy(i => i).Select(t => new string[2] {t.Key.ToString(), t.Count().ToString()})
-                .OrderBy(num => num[0]).Select(i => "Broj" + i[0] + " ponavlja se " + i[1] + " puta");
+            var result = intArray.GroupBy(i => i).Select(t => new string[2] { t.Key.ToString(), t.Count().ToString() })
+                .OrderBy(num => num[0]).Select(i => "broj " + i[0] + " ponavlja se " + i[1] + " puta");
 
             return result.ToArray();
         }
@@ -20,15 +20,15 @@ namespace Task_4
 
         public static University[] Linq2_2(University[] universityArray)
         {
-            float average = universityArray.Select(s => new object[2] {s.Name, s.Students.Length})
-                .Average(uni => (float) uni[1]);
+            float average = universityArray.Select(s => new object[2] { s.Name, s.Students.Length })
+                .Average(uni => float.Parse(uni[1].ToString()));
 
             return universityArray.Where(uni => uni.Students.Length < average).ToArray();
         }
 
         public static Student[] Linq2_3(University[] universityArray) =>
             universityArray.SelectMany(t => t.Students).Distinct().ToArray();
-    
+
         public static Student[] Linq2_4(University[] universityArray)
         {
             Student[] maleUniversitiesStudents = universityArray
@@ -44,9 +44,15 @@ namespace Task_4
 
         }
 
-        public static Student[] Linq2_5(University[] universityArray) => universityArray.SelectMany(uni => uni.Students)
-            .GroupBy(s => s.Jmbag).Select(s => new object[2] {s, s.Count()}).Where(s => (int) s[1] > 1)
-            .Select(s => (Student) s[0]).Distinct().ToArray();
+        public static Student[] Linq2_5(University[] universityArray)
+        {
+            List<string> moreThanOneCollegeJmbagsList = universityArray.SelectMany(t => t.Students).GroupBy(x => x.Jmbag).Select(x => new
+            {
+                x.Key,
+                Count = x.Count()
+            }).Where(t => (int)t.Count > 1).Select(i => i.Key).ToList();
 
+            return universityArray.SelectMany(uni => uni.Students).Distinct().Where(s => moreThanOneCollegeJmbagsList.Contains(s.Jmbag)).ToArray();
+        }
     }
 }
